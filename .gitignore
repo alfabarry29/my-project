@@ -5,3 +5,10 @@
 *.tfstate.*
 crash.log
 crash.*.log
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Local Terraform backend settings
+*.s3.tfbackend
