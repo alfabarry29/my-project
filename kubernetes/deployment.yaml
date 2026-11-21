@@ -22,8 +22,8 @@ spec:
 
       - name: my-app
 
-        image: my-project:latest
-        imagePullPolicy: IfNotPresent
+        image: ghcr.io/alfabarry29/my-project:main
+        imagePullPolicy: Always
 
         ports:
         - containerPort: 5000

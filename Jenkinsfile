@@ -1,9 +1,12 @@
 pipeline {
+    agent { label 'docker-deploy' }
 
-    agent any
+    options {
+        disableConcurrentBuilds()
+        skipDefaultCheckout()
+    }
 
     stages {
-
         stage('Checkout') {
             steps {
                 checkout scm
@@ -12,16 +15,22 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t my-project .'
+                sh 'docker build -t my-project:$GIT_COMMIT .'
             }
         }
 
-        stage('Run Container') {
+        stage('Deploy Container') {
             steps {
-                sh 'docker run -d -p 5000:5000 my-project'
+                sh '''
+                    set -eu
+                    existing=$(docker container ls -aq --filter 'name=^/my-project$')
+                    if [ -n "$existing" ]; then
+                        docker container stop my-project
+                        docker container rm my-project
+                    fi
+                    docker run -d --name my-project -p 5000:5000 "my-project:$GIT_COMMIT"
+                '''
             }
         }
-
     }
-
 }
